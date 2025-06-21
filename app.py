@@ -99,19 +99,31 @@ if img:
 
         prediction = model.predict(img_array)
         class_idx = np.argmax(prediction)
-        leaf_name = class_names[class_idx]
-        lang_code = lang_map[language]
-        usage = medicinal_data.get(lang_code, {}).get(leaf_name, "Usage not available.")
-
-    # Output card
-    st.markdown(f"""
-        <div class="leaf-card">
-            <h4 style='color:#2e7d32; font-family: sans-serif; font-weight: 600;'>
-                🌿 Identified Leaf: <span style='color:#4caf50;'>{leaf_name}</span>
-            </h4>
-            <p style='font-size: 16px; color:#333; font-family: sans-serif;'>
-                💊 <strong style='margin-right: 0.5em;'>Medicinal Usage:</strong>{usage}
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-#trigger rebuild
+        confidence = prediction[0][class_idx]
+        if confidence < 0.9:
+            st.markdown(f"""
+                <div class="leaf-card">
+                    <h4 style='color:#d32f2f; font-family: sans-serif; font-weight: 600;'>
+                        🚫 Unrecognized Leaf
+                    </h4>
+                    <p style='font-size: 16px; color:#333; font-family: sans-serif;'>
+                        The uploaded image doesn't appear to match any known leaf class with high confidence.<br>
+                        Please try again with a clear image of a single leaf.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            leaf_name = class_names[class_idx]
+            lang_code = lang_map[language]
+            usage = medicinal_data.get(lang_code, {}).get(leaf_name, "Usage not available.")
+            
+            st.markdown(f"""
+                <div class="leaf-card">
+                    <h4 style='color:#2e7d32; font-family: sans-serif; font-weight: 600;'>
+                        🌿 Identified Leaf: <span style='color:#4caf50;'>{leaf_name}</span>
+                    </h4>
+                    <p style='font-size: 16px; color:#333; font-family: sans-serif;'>
+                        💊 <strong style='margin-right: 0.5em;'>Medicinal Usage:</strong>{usage}
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
