@@ -100,7 +100,7 @@ if img:
         prediction = model.predict(img_array)
         class_idx = np.argmax(prediction)
         confidence = prediction[0][class_idx]
-        if confidence < 0.9:
+        if confidence < 0.78:
             st.markdown(f"""
                 <div class="leaf-card">
                     <h4 style='color:#d32f2f; font-family: sans-serif; font-weight: 600;'>
